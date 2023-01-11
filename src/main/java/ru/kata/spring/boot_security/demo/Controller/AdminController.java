@@ -1,6 +1,9 @@
 package ru.kata.spring.boot_security.demo.Controller;
 
 import javax.validation.Valid;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,6 +12,7 @@ import ru.kata.spring.boot_security.demo.Entities.User;
 import ru.kata.spring.boot_security.demo.Service.RoleService;
 import ru.kata.spring.boot_security.demo.Service.UserService;
 
+import java.security.Principal;
 import java.util.List;
 
 
@@ -17,21 +21,24 @@ import java.util.List;
 public class AdminController {
     private final UserService userService;
     private final RoleService roleService;
-    public AdminController(UserService userService, RoleService roleService) {
+    private final UserDetailsService userDetailsService;
+    public AdminController(UserService userService, RoleService roleService, UserDetailsService userDetailsService) {
         this.userService = userService;
         this.roleService = roleService;
+        this.userDetailsService = userDetailsService;
     }
     @GetMapping("")
-    public String index(Model model) {
-        List<User> users = userService.getAllUsers();
-        model.addAttribute("users", users);
+    public String index(Principal principal, Model model) {
+        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("myUser", userDetailsService.loadUserByUsername(principal.getName()));
         return "admin/index";
     }
 
     //-----Create ------
     @GetMapping("/add")
-    public String add(@ModelAttribute("user") User user, Model model) {
+    public String add(@ModelAttribute("user") User user, Model model, Principal principal) {
         model.addAttribute("roles", roleService.getAllRoles());
+        model.addAttribute("myUser", userDetailsService.loadUserByUsername(principal.getName()));
         return "admin/add";
     }
     @PostMapping("/")
@@ -46,9 +53,10 @@ public class AdminController {
 
     //--------Edit---------
     @GetMapping("/{id}/edit")
-    public String edit(@PathVariable("id") Long id, Model model) {
+    public String edit(@PathVariable("id") Long id, Model model, Principal principal) {
         model.addAttribute("user", userService.getUserById(id));
         model.addAttribute("roles", roleService.getAllRoles());
+        model.addAttribute("myUser", userDetailsService.loadUserByUsername(principal.getName()));
         return "admin/edit";
     }
     @PatchMapping("/{id}")

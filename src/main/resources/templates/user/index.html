@@ -8,8 +8,8 @@
 <div class="wrap">
     <header sec:authorize="isAuthenticated()">
         <div>
-            Logged user: <span sec:authentication="name">#username</span>
-            Roles: <span sec:authentication="principal.authorities">#roles</span>
+            Logged user: <span th:text="${myUser.getUsername()}">#username</span>
+            Roles: <span th:text="${myUser.getAuthorities()}">#roles</span>
         </div>
         <input sec:authorize="hasRole('ADMIN')" type="button" value="Admin page" onclick="window.location.href='/admin'">
         <form th:action="@{/logout}" th:method="POST">
@@ -18,10 +18,10 @@
     </header>
     <h1><span sec:authentication="name">User</span>, welcome to spring boot security page!</h1>
     <div class="form-wrapper">
-        <table th:block th:each="user : ${user.get()}">
+        <table>
             <tr>
                 <td>Username</td>
-                <td th:text="${user.getUsername()}">
+                <td th:text="${myUser.getUsername()}">
                 </td>
             </tr>
             <tr>
@@ -30,19 +30,19 @@
             </tr>
             <tr>
                 <td>First name</td>
-                <td th:text="${user.getFirstName()}">
+                <td th:text="${myUser.getFirstName()}">
             </tr>
             <tr>
                 <td>Last name</td>
-                <td th:text="${user.getLastName()}">
+                <td th:text="${myUser.getLastName()}">
             </tr>
             <tr>
                 <td>Age</td>
-                <td th:text="${user.getAge()}">
+                <td th:text="${myUser.getAge()}">
             </tr>
             <tr>
                 <td>Email</td>
-                <td th:text="${user.getEmail()}">
+                <td th:text="${myUser.getEmail()}">
             </tr>
         </table>
     </div>
